@@ -1,23 +1,30 @@
 #include "opencv2\opencv.hpp"
+#include <stdint.h>
 
 using namespace cv;
+using namespace std;
 
 int main(int arg, char** argc)
 {
-	Mat tst1 = imread("test.JPG", CV_LOAD_IMAGE_UNCHANGED);
-	Mat tst2 = imread("test.JPG", CV_LOAD_IMAGE_GRAYSCALE);
+	Mat original = imread("test.JPG", CV_LOAD_IMAGE_COLOR);
+	Mat modified = imread("test.JPG", CV_LOAD_IMAGE_COLOR);
 
-	namedWindow("Color", CV_WINDOW_FREERATIO);
-	namedWindow("Fixed", CV_WINDOW_AUTOSIZE);
+	//Iterate through the img. 
+	for (int r = 0; r < modified.rows;r++)
+	{
+		for (int c = 0 ; c < modified.cols; c++)
+		{
+			//GrayScale Img
+			//modified.at<uint8_t>(r, c) = modified.at<uint8_t>(r,c) * 0.5f;
 
-	imshow("Color", tst1);
-	imshow("Fixed", tst2);
+			//Color Img. Vec3b = 3 band, b = byte
+			modified.at<cv::Vec3b>(r, c)[2] = modified.at<cv::Vec3b>(r, c)[2] * 0.0f;
+		}
+	}
+	
+	imshow("Original", original);
+	imshow("Modified", modified);
 
-	resizeWindow("Color", tst1.cols, tst1.rows);
-	resizeWindow("Fixed", tst2.cols/2, tst2.rows/2);
-
-	moveWindow("Color", 1000, 600);
-	moveWindow("Fixed", 1000 + tst1.cols, 800);
 
 	waitKey();
 }

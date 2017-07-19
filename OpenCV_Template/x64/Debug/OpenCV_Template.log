@@ -1,3 +1,4 @@
 ﻿  main.cpp
+c:\users\willi\onedrive\documentos\visual studio 2017\projects\opencv_template\opencv_template\main.cpp(21): warning C4244: '=': conversion from 'float' to 'uchar', possible loss of data
   OpenCV_Template.vcxproj -> C:\Users\willi\onedrive\documentos\visual studio 2017\Projects\OpenCV_Template\x64\Debug\OpenCV_Template.exe
   OpenCV_Template.vcxproj -> C:\Users\willi\onedrive\documentos\visual studio 2017\Projects\OpenCV_Template\x64\Debug\OpenCV_Template.pdb (Partial PDB)
