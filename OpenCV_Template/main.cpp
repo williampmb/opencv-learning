@@ -19,10 +19,33 @@ void takeDFT(Mat& source, Mat& dest)
 	dest = dftOfOriginal;
 }
 
+void recenterDFT(Mat& source)
+{
+	int centerX = source.cols / 2;
+	int centerY = source.rows / 2;
+
+	Mat q1(source, Rect(0, 0, centerX, centerY));
+	Mat q2(source, Rect(centerX, 0, centerX, centerY));
+	Mat q3(source, Rect(0, centerY, centerX, centerY));
+	Mat q4(source, Rect(centerX, centerY, centerX, centerY));
+
+	Mat swapMap;
+
+	q1.copyTo(swapMap);
+	q4.copyTo(q1);
+	swapMap.copyTo(q4);
+
+	q2.copyTo(swapMap);
+	q3.copyTo(q2);
+	swapMap.copyTo(q3);
+
+}
+
 void showDFT(Mat& source)
 {
 	Mat splitArray[2] = { Mat::zeros(source.size(),CV_32F), Mat::zeros(source.size(),CV_32F) };
 
+	//Split the real and imaginary part  
 	split(source, splitArray);
 
 	Mat dftMagnitude;
@@ -34,6 +57,8 @@ void showDFT(Mat& source)
 	log(dftMagnitude, dftMagnitude);
 
 	normalize(dftMagnitude, dftMagnitude, 0, 1, CV_MINMAX);
+
+	recenterDFT(dftMagnitude);
 
 	imshow("DFT", dftMagnitude);
 
