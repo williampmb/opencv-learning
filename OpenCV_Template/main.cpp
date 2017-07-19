@@ -65,6 +65,17 @@ void showDFT(Mat& source)
 	waitKey();
 }
 
+void invertDFT(Mat& source, Mat& dest)
+{
+	Mat inverse;
+
+	// DFT_INVERSE = inverse of the dft processe,  DFT_REAL_OUTPUT = just the real part of the img, not imaginary. DFT_SCALE = rescale in rge to make sense
+	dft(source, inverse, DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);
+
+	dest = inverse;
+
+}
+
 int main(int arg, char** argc)
 {
 	Mat original = imread("test.JPG", CV_LOAD_IMAGE_GRAYSCALE);
@@ -79,4 +90,12 @@ int main(int arg, char** argc)
 	takeDFT(originalFloat, dftOfOriginal);
 
 	showDFT(dftOfOriginal);
+	
+	Mat invertedDFT;
+
+	invertDFT(dftOfOriginal, invertedDFT);
+
+	imshow("InvertDFT", invertedDFT);
+
+	waitKey();
 }
