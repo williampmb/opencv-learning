@@ -76,26 +76,43 @@ void invertDFT(Mat& source, Mat& dest)
 
 }
 
+void createGuassian(Size& size, Mat& output, int uX, int uY, float sigmaX, float sigmaY, float amplitude = 1.0f)
+{
+	Mat temp = Mat(size, CV_32F);
+
+	for (int r = 0; r < size.height; r++)
+	{
+		for (int c = 0; c < size.width; c++)
+		{
+			float x = ((c - uX)*((float)c - uX)) / (2.0f*sigmaX*sigmaX);
+			float y = ((r - uY)*((float)r - uY)) / (2.0f*sigmaY*sigmaY);
+			float value = amplitude * exp(-(x + y));
+
+			temp.at<float>(r, c) = value;
+		}
+	}
+
+	normalize(temp, temp, 0.0f, 1.0f, NORM_MINMAX);
+	output = temp;
+
+}
+
 int main(int arg, char** argc)
 {
-	Mat original = imread("test.JPG", CV_LOAD_IMAGE_GRAYSCALE);
+	//Mat original = imread("test.JPG", CV_LOAD_IMAGE_GRAYSCALE);
+	//Mat originalFloat;
+	//original.convertTo(originalFloat, CV_32FC1, 1.0 / 255.0);
+	//Mat dftOfOriginal;
+	//takeDFT(originalFloat, dftOfOriginal);
+	//showDFT(dftOfOriginal);
+	//Mat invertedDFT;
+	//invertDFT(dftOfOriginal, invertedDFT);
+	//imshow("InvertDFT", invertedDFT);
 
-	Mat originalFloat;
 
-	// 1/255 = normalized
-	original.convertTo(originalFloat, CV_32FC1, 1.0 / 255.0);
-
-	Mat dftOfOriginal;
-
-	takeDFT(originalFloat, dftOfOriginal);
-
-	showDFT(dftOfOriginal);
-	
-	Mat invertedDFT;
-
-	invertDFT(dftOfOriginal, invertedDFT);
-
-	imshow("InvertDFT", invertedDFT);
+	Mat output;
+	createGuassian(Size(256, 256), output, 256 / 2, 256 / 2, 10, 10);
+	imshow("Guassian", output);
 
 	waitKey();
 }
