@@ -106,7 +106,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(OPENCV3_DIR)\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world320d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core320d.lib;opencv_aruco320d.lib;opencv_imgproc320d.lib;opencv_highgui320d.lib;opencv_video320d.lib;opencv_imgcodecs320d.lib;opencv_videoio320d.lib;opencv_calib3d320d.lib;opencv_ccalib320d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
