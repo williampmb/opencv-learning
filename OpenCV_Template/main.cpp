@@ -6,6 +6,8 @@
 #include "opencv2\calib3d.hpp"
 
 #include <stdint.h>
+#include <fstream>
+#include <iostream>
 
 using namespace cv;
 using namespace std;
@@ -63,6 +65,60 @@ void getChessboardCorners(vector<Mat> imgs, vector<vector<Point2f>>& allFoundCon
 	}
 }
 
+void cameraCalibration(vector<Mat> calibrationImgs, Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients)
+{
+	vector<vector<Point2f>> checkerBoardImgSpacePoints;
+	getChessboardCorners(calibrationImgs, checkerBoardImgSpacePoints, false);
+
+	vector<vector<Point3f>> worldSpaceCornerPoints(1);
+
+	createKnowBoardPosition(boardSize, squareEdgeLength, worldSpaceCornerPoints[0]);
+	worldSpaceCornerPoints.resize(checkerBoardImgSpacePoints.size(), worldSpaceCornerPoints[0]);
+
+	vector<Mat> rVerctors, tVectors;
+	distanceCoefficients = Mat::zeros(8, 1, CV_64F);
+
+	calibrateCamera(worldSpaceCornerPoints, checkerBoardImgSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVerctors, tVectors);
+}
+
+bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoefficients)
+{
+	ofstream outStream(name);
+	if (outStream)
+	{
+		uint16_t rows = cameraMatrix.rows;
+		uint16_t columns = cameraMatrix.cols;
+
+		for (int r = 0 ; r < rows; r++)
+		{
+			for (int c = 0 ; c < columns; c++)
+			{
+				double value = cameraMatrix.at<double>(r, c);
+				outStream << value << endl;
+			}
+		}
+
+		rows = distanceCoefficients.rows;
+		columns = distanceCoefficients.cols;
+
+		for (int r = 0; r < rows; r++)
+		{
+			for (int c = 0; c < columns; c++)
+			{
+				double value = distanceCoefficients.at<double>(r, c);
+				outStream << value << endl;
+			}
+		}
+
+		outStream.close();
+		return true;
+	}
+
+	return false;
+
+}
+
+
 int main(int arg, char** argc)
 {
 	Mat frame;
@@ -104,6 +160,34 @@ int main(int arg, char** argc)
 		else
 			imshow("Webcam", frame);
 		char character = waitKey(1000 / fps);
+
+		switch(character)
+		{
+		case ' ':
+			//saving image
+			if (found)
+			{
+				Mat temp;
+				frame.copyTo(temp);
+				savedImages.push_back(temp);
+				cout << "Saved Imaged" << endl;
+			}
+			break;
+		case 13:
+			//start calibration
+			if (savedImages.size() > 15)
+			{
+				cameraCalibration(savedImages, chessboardDimensions, calibrationSquareDimension, cameraMatrix, distanceCoefficients);
+				saveCameraCalibration("CameraCalibration", cameraMatrix, distanceCoefficients);
+				cout << "Calibration" << endl;
+			}
+			break;
+		case 27:
+			//exit
+			cout << "Exit" << endl;
+			return 0;
+			break;
+		}
 	}
 
 	return 0;
